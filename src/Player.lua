@@ -86,20 +86,10 @@ end
 
 
 function Player:die()
-    -- resets all global progress variables
-    gLevelWidth = 100
-    gPlayerScore = 0
-    gNewLevel = false
-    gKeyVals = {
-        ['obtained'] = false,
-        ['color'] = math.random(4),
-        ['unlocked'] = false
-    }
     gSounds['death']:play()
     gStateMachine:change('start', {
         ['levelNum'] = 1,
         ['score'] = 0,
         ['levelWidth'] = 100,
     })
-    gLevelNumber = 1
 end

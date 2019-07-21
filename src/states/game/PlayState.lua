@@ -63,19 +63,19 @@ function PlayState:render()
     love.graphics.print("Level "..tostring(self.levelNum), VIRTUAL_WIDTH-39.5, 9.5)
     love.graphics.setFont(gFonts['medium'])
 
-    if gKeyVals.obtained and not gKeyVals.unlocked then
+    if self.keyVals.obtained and not self.keyVals.unlocked then
         love.graphics.draw(
             -- textures indexed by key color number
-            gTextures['keys'], gFrames['keys'][gKeyVals.color],
+            gTextures['keys'], gFrames['keys'][self.keyVals.color],
             -- x and y
             (VIRTUAL_WIDTH -TILE_SIZE)-2, 2,
             -- rotation and scale
             0, 0.5
         )
-    else if gKeyVals.unlocked then
+    else if self.keyVals.unlocked then
         love.graphics.draw(
             -- textures indexed by key color number
-            gTextures['flagbanners'], gFrames['flagbanners'][gKeyVals.color*2],
+            gTextures['flagbanners'], gFrames['flagbanners'][self.keyVals.color*2],
             -- x and y
             (VIRTUAL_WIDTH -TILE_SIZE)-2, 2,
             -- rotation and scale

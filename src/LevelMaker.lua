@@ -11,8 +11,8 @@
 LevelMaker = Class{}
 
 function LevelMaker.generate(width, height)
-    if gKeyVals == nil then
-        gKeyVals = {
+    if gStateMachine.current.keyVals == nil then
+        gStateMachine.current.keyVals = {
             ['obtained'] = false,
             ['color'] = math.random(4),
             ['unlocked'] = false
@@ -183,14 +183,14 @@ function LevelMaker.generate(width, height)
                     y = (blockHeight - 1) * TILE_SIZE,
                     width = 16,
                     height = 16,
-                    frame = gKeyVals.color,
+                    frame = gStateMachine.current.keyVals.color,
                     collidable = true,
                     hit = false,
                     solid = true,
                     onCollide = function(obj)
-                        if gKeyVals['obtained'] then
+                        if gStateMachine.current.keyVals['obtained'] then
                             gSounds['powerup-reveal']:play()
-                            gKeyVals['unlocked'] = true
+                            gStateMachine.current.keyVals['unlocked'] = true
                             for k,v in pairs(objects) do
                                 if v.texture == 'locks' then
                                     table.remove(objects, k)
@@ -198,7 +198,7 @@ function LevelMaker.generate(width, height)
                             end
 
                             for i=1,3 do
-                                flagFrame = gKeyVals.color + ((i-1)*N_OF_FLAGS)
+                                flagFrame = gStateMachine.current.keyVals.color + ((i-1)*N_OF_FLAGS)
                                 local flagpole = GameObject {
                                     texture = 'flagpoles',
                                     x = (gStateMachine.current.levelWidth-2)*TILE_SIZE,
@@ -228,7 +228,7 @@ function LevelMaker.generate(width, height)
                                 y = (3*TILE_SIZE),
                                 width = 16,
                                 height = 16,
-                                frame = gKeyVals.color*2,
+                                frame = gStateMachine.current.keyVals.color*2,
                                 collidable = true,
                                 consumable = false,
                                 solid = false,
@@ -254,7 +254,7 @@ function LevelMaker.generate(width, height)
                     y = (blockHeight - 1) * TILE_SIZE,
                     width = 16,
                     height = 16,
-                    frame = gKeyVals.color,
+                    frame = gStateMachine.current.keyVals.color,
                     -- collidable = true,
                     hit = false,
                     solid = false,
@@ -262,7 +262,7 @@ function LevelMaker.generate(width, height)
                     onConsume = function(player, object)
                         gSounds['pickup']:play()
                         player.score = player.score + 200
-                        gKeyVals['obtained'] = true
+                        gStateMachine.current.keyVals['obtained'] = true
                     end
                 }
                 table.insert(objects,newKey)

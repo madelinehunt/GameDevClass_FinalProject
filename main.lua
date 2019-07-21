@@ -1,7 +1,3 @@
---[[ Your goals this assignment:
-TODO When the player touches this goal post, we should regenerate the level, spawn the player at the beginning of it again (this can all be done via just reloading PlayState), and make it a little longer than it was before. You’ll need to introduce params to the PlayState:enter function that keeps track of the current level and persists the player’s score for this to work properly. The easiest way to do this is to just add an onConsume callback to each flag piece when we instantiate them in the last goal; this onConsume method should then just restart our PlayState, only now we’ll need to ensure we pass in our score and width of our game map so that we can generate a map larger than the one before it. For this, you’ll need to implement a PlayState:enter method accordingly; see prior assignments for plenty of examples on how we can achieve this! And don’t forget to edit the default gStateMachine:change('play') call to take in some default score and level width!
-
-]]
 --[[
     GD50
     Super Mario Bros. Remake
@@ -48,16 +44,6 @@ function love.load()
     gSounds['music']:setLooping(true)
     gSounds['music']:setVolume(0.5)
     gSounds['music']:play()
-
-    --[[ declaring this--regrettably--as a global variable, mostly to get around
-        scope issues caused by LevelMaker not being a class (and by onCollide not
-        getting player passed as a paremeter)
-    ]]
-    gKeyVals = {
-        ['obtained'] = false,
-        ['color'] = math.random(4),
-        ['unlocked'] = false
-    }
 
     love.keyboard.keysPressed = {}
 
