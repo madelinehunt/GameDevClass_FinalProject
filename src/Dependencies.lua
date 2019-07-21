@@ -77,6 +77,8 @@ gTextures = {
     ['creatures'] = love.graphics.newImage('graphics/creatures.png'),
     ['keys'] = love.graphics.newImage('graphics/keys_and_locks.png'),
     ['locks'] = love.graphics.newImage('graphics/keys_and_locks.png'),
+    ['flagpoles'] = love.graphics.newImage('graphics/flagpoles.png'),
+    ['flagbanners'] = love.graphics.newImage('graphics/flag_banners.png'),
 }
 
 -- workaround because APPARENTLY lua doesn't support indexing by range
@@ -99,6 +101,8 @@ gFrames = {
     ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16),
     ['keys'] = keys,
     ['locks'] = locks,
+    ['flagpoles'] = GenerateQuads(gTextures['flagpoles'], 16, 16),
+    ['flagbanners'] = GenerateQuads(gTextures['flagbanners'], 16, 16),
 }
 
 

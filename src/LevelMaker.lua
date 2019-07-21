@@ -10,14 +10,15 @@
 
 LevelMaker = Class{}
 
-function LevelMaker.generate(width, height, keyVals)
-    if keyVals == nil then
-        keyVals = {
+function LevelMaker.generate(width, height)
+    if gKeyVals == nil then
+        gKeyVals = {
             ['obtained'] = false,
             ['color'] = math.random(4),
             ['unlocked'] = false
         }
     end
+
     local tiles = {}
     local entities = {}
     local objects = {}
@@ -49,8 +50,11 @@ function LevelMaker.generate(width, height, keyVals)
         end
 
         -- chance to just be emptiness
-        -- ADDED: only has a chance to spawn chasm if AFTER first 4 columns
-        if math.random(7) == 1 and x > 4 then
+        --[[ ADDED: only has a chance to spawn chasm if AFTER first 4 columns,
+        and makes sure that final two columns are solid (for flag)
+        ]]
+
+        if math.random(7) == 1 and x > 4 and x < width-2 then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
@@ -67,7 +71,7 @@ function LevelMaker.generate(width, height, keyVals)
             end
 
             -- chance to generate a pillar
-            if math.random(8) == 1 then
+            if math.random(8) == 1 and x < width-2 then
                 blockHeight = 2
 
                 -- chance to generate bush on pillar
@@ -93,7 +97,7 @@ function LevelMaker.generate(width, height, keyVals)
                 tiles[7][x].topper = nil
 
             -- chance to generate bushes
-            elseif math.random(8) == 1 then
+            elseif math.random(8) == 1 and x < width-2 then
                 table.insert(objects,
                     GameObject {
                         texture = 'bushes',
@@ -108,7 +112,7 @@ function LevelMaker.generate(width, height, keyVals)
             end
 
             -- chance to spawn a block
-            if math.random(10) == 1 then
+            if math.random(10) == 1 and x < width-2 then
                 jumpBlockHere = true
                 table.insert(objects,
                     GameObject {
@@ -170,32 +174,8 @@ function LevelMaker.generate(width, height, keyVals)
                 )
             end
 
-            -- spawning the key
-            if keySpawned == false and x > (width*.4) and x < (width*.7) and not jumpBlockHere then
-                keySpawned = true
-                newKey = GameObject {
-                    texture = 'keys',
-                    x = (x - 1) * TILE_SIZE,
-                    y = (blockHeight - 1) * TILE_SIZE,
-                    width = 16,
-                    height = 16,
-
-                    frame = keyVals.color,
-                    collidable = true,
-                    hit = false,
-                    solid = false,
-                    consumable = true,
-
-                    onConsume = function(player, object)
-                        gSounds['pickup']:play()
-                        player.score = player.score + 200
-                        player.hasKey = true
-                    end
-                }
-                table.insert(objects,newKey)
-            end
-
-            if lockSpawned == false and x > (width*.1) and x < (width*.4) and not jumpBlockHere then
+            -- spawning the lock
+            if lockSpawned == false and x > (width*.4) and x < (width*.6) and not jumpBlockHere then
                 lockSpawned = true
                 newLock = GameObject {
                     texture = 'locks',
@@ -203,22 +183,97 @@ function LevelMaker.generate(width, height, keyVals)
                     y = (blockHeight - 1) * TILE_SIZE,
                     width = 16,
                     height = 16,
-                    frame = keyVals.color,
+                    frame = gKeyVals.color,
                     collidable = true,
                     hit = false,
                     solid = true,
                     onCollide = function(obj)
-                        print(dump(obj))
-                        gSounds['powerup-reveal']:play()
-                        table.remove(objects, obj.deletePos)
+                        if gKeyVals['obtained'] then
+                            gSounds['powerup-reveal']:play()
+                            gKeyVals['unlocked'] = true
+                            for k,v in pairs(objects) do
+                                if v.texture == 'locks' then
+                                    table.remove(objects, k)
+                                end
+                            end
+
+                            for i=1,3 do
+                                flagFrame = gKeyVals.color + ((i-1)*N_OF_FLAGS)
+                                local flagpole = GameObject {
+                                    texture = 'flagpoles',
+                                    x = (gLevelWidth-2)*TILE_SIZE,
+                                    y = ((2+i)*TILE_SIZE),
+                                    width = 16,
+                                    height = 16,
+                                    frame = flagFrame,
+                                    collidable = true,
+                                    consumable = false,
+                                    solid = false,
+                                }
+                                if i == 2 then
+                                    flagpole.consumable = true
+                                    flagpole.onConsume = function(player, object)
+                                        if gNewLevel == false then
+                                            gNewLevel = true
+                                            gLevelWidth = gLevelWidth + 20
+                                            gPlayerScore = gPlayerScore + player.score
+                                            gLevelNumber = gLevelNumber + 1
+                                            gKeyVals = {
+                                                ['obtained'] = false,
+                                                ['color'] = math.random(4),
+                                                ['unlocked'] = false
+                                            }
+                                            gStateMachine:change('play')
+                                        end
+                                    end
+                                end
+                                table.insert(objects, flagpole)
+                            end
+                            local flagBanner = GameObject {
+                                texture = 'flagbanners',
+                                x = (gLevelWidth-1)*TILE_SIZE-8,
+                                y = (3*TILE_SIZE),
+                                width = 16,
+                                height = 16,
+                                frame = gKeyVals.color*2,
+                                collidable = true,
+                                consumable = false,
+                                solid = false,
+                            }
+                            table.insert(objects, flagBanner)
+
+                        else
+                            gSounds['empty-block']:play()
+                        end
+
                     end,
                 }
-                newLock.keyVals = keyVals
-                newLock.deletePos = #objects+1
-
+                newLock.deletePos = #objects
                 table.insert(objects,newLock)
             end
 
+            -- spawning the key
+            if keySpawned == false and x > (width*.65) and x < (width*.85) and not jumpBlockHere then
+                keySpawned = true
+                newKey = GameObject {
+                    texture = 'keys',
+                    x = (x - 1) * TILE_SIZE,
+                    y = (blockHeight - 1) * TILE_SIZE,
+                    width = 16,
+                    height = 16,
+                    frame = gKeyVals.color,
+                    -- collidable = true,
+                    hit = false,
+                    solid = false,
+                    consumable = true,
+                    onConsume = function(player, object)
+                        gSounds['pickup']:play()
+                        player.score = player.score + 200
+                        gKeyVals['obtained'] = true
+                    end
+                }
+                table.insert(objects,newKey)
+            end
         end
     end
 

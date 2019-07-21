@@ -10,12 +10,8 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
     self.camX = 0
     self.camY = 0
-    self.keyVals = {
-        ['obtained'] = false,
-        ['color'] = math.random(4),
-        ['unlocked'] = false
-    }
-    self.level = LevelMaker.generate(100, 10, self.keyVals)
+
+    self.level = LevelMaker.generate(gLevelWidth, 10)
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
@@ -36,6 +32,8 @@ function PlayState:init()
         map = self.tileMap,
         level = self.level
     })
+    self.player.score = gPlayerScore
+    gNewLevel = false
 
     self:spawnEnemies()
 
@@ -84,6 +82,35 @@ function PlayState:render()
     love.graphics.print(tostring(self.player.score), 5, 5)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(tostring(self.player.score), 4, 4)
+
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.print("Level "..tostring(gLevelNumber), VIRTUAL_WIDTH-40, 10)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print("Level "..tostring(gLevelNumber), VIRTUAL_WIDTH-39.5, 9.5)
+    love.graphics.setFont(gFonts['medium'])
+
+    if gKeyVals.obtained and not gKeyVals.unlocked then
+        love.graphics.draw(
+            -- textures indexed by key color number
+            gTextures['keys'], gFrames['keys'][gKeyVals.color],
+            -- x and y
+            (VIRTUAL_WIDTH -TILE_SIZE)-2, 2,
+            -- rotation and scale
+            0, 0.5
+        )
+    else if gKeyVals.unlocked then
+        love.graphics.draw(
+            -- textures indexed by key color number
+            gTextures['flagbanners'], gFrames['flagbanners'][gKeyVals.color*2],
+            -- x and y
+            (VIRTUAL_WIDTH -TILE_SIZE)-2, 2,
+            -- rotation and scale
+            0, 0.5
+        )
+    end
+    end
+
 end
 
 function PlayState:updateCamera()
@@ -139,4 +166,19 @@ function PlayState:spawnEnemies()
             end
         end
     end
+end
+
+function PlayState:enter(params)
+
+    -- grab level # from the params we're passed
+    self.level = params.level
+
+    -- spawn a board and place it toward the right
+    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16, params.level)
+
+    -- grab score from params if it was passed
+    self.score = params.score or 0
+
+    -- score we have to reach to get to the next level
+    self.scoreGoal = self.level * 1.25 * 1000
 end

@@ -91,3 +91,5 @@ JUMP_BLOCKS = {}
 for i = 1, 30 do
     table.insert(JUMP_BLOCKS, i)
 end
+
+N_OF_FLAGS = 6
