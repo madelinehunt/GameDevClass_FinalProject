@@ -11,33 +11,6 @@ function PlayState:init()
     self.camX = 0
     self.camY = 0
 
-    self.level = LevelMaker.generate(gLevelWidth, 10)
-    self.tileMap = self.level.tileMap
-    self.background = math.random(3)
-    self.backgroundX = 0
-
-    self.gravityOn = true
-    self.gravityAmount = 6
-
-    self.player = Player({
-        x = 0, y = 0,
-        width = 16, height = 20,
-        texture = 'pink-alien',
-        stateMachine = StateMachine {
-            ['idle'] = function() return PlayerIdleState(self.player) end,
-            ['walking'] = function() return PlayerWalkingState(self.player) end,
-            ['jump'] = function() return PlayerJumpState(self.player, self.gravityAmount) end,
-            ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
-        },
-        map = self.tileMap,
-        level = self.level
-    })
-    self.player.score = gPlayerScore
-    gNewLevel = false
-
-    self:spawnEnemies()
-
-    self.player:changeState('falling')
 end
 
 function PlayState:update(dt)
@@ -85,9 +58,9 @@ function PlayState:render()
 
     love.graphics.setFont(gFonts['small'])
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.print("Level "..tostring(gLevelNumber), VIRTUAL_WIDTH-40, 10)
+    love.graphics.print("Level "..tostring(self.levelNum), VIRTUAL_WIDTH-40, 10)
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.print("Level "..tostring(gLevelNumber), VIRTUAL_WIDTH-39.5, 9.5)
+    love.graphics.print("Level "..tostring(self.levelNum), VIRTUAL_WIDTH-39.5, 9.5)
     love.graphics.setFont(gFonts['medium'])
 
     if gKeyVals.obtained and not gKeyVals.unlocked then
@@ -169,16 +142,48 @@ function PlayState:spawnEnemies()
 end
 
 function PlayState:enter(params)
+    -- set defaults
+    if params == nil then
+        params = {
+            ['levelNum'] = 1,
+            ['score'] = 0,
+            ['levelWidth'] = 100,
+        }
+    end
+    self.keyVals = {
+        ['obtained'] = false,
+        ['color'] = math.random(4),
+        ['unlocked'] = false
+    }
 
-    -- grab level # from the params we're passed
-    self.level = params.level
+    self.levelNum = params.levelNum
+    self.levelWidth = params.levelWidth
 
-    -- spawn a board and place it toward the right
-    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16, params.level)
+    self.level = LevelMaker.generate(self.levelWidth, 10)
+    self.tileMap = self.level.tileMap
+    self.background = math.random(3)
+    self.backgroundX = 0
 
-    -- grab score from params if it was passed
-    self.score = params.score or 0
+    self.gravityOn = true
+    self.gravityAmount = 6
 
-    -- score we have to reach to get to the next level
-    self.scoreGoal = self.level * 1.25 * 1000
+    self.player = Player({
+        x = 0, y = 0,
+        width = 16, height = 20,
+        texture = 'pink-alien',
+        stateMachine = StateMachine {
+            ['idle'] = function() return PlayerIdleState(self.player) end,
+            ['walking'] = function() return PlayerWalkingState(self.player) end,
+            ['jump'] = function() return PlayerJumpState(self.player, self.gravityAmount) end,
+            ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
+        },
+        map = self.tileMap,
+        level = self.level
+    })
+    self.player.score = params.score
+
+    self:spawnEnemies()
+
+    self.player:changeState('falling')
+
 end

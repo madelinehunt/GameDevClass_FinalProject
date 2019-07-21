@@ -201,7 +201,7 @@ function LevelMaker.generate(width, height)
                                 flagFrame = gKeyVals.color + ((i-1)*N_OF_FLAGS)
                                 local flagpole = GameObject {
                                     texture = 'flagpoles',
-                                    x = (gLevelWidth-2)*TILE_SIZE,
+                                    x = (gStateMachine.current.levelWidth-2)*TILE_SIZE,
                                     y = ((2+i)*TILE_SIZE),
                                     width = 16,
                                     height = 16,
@@ -213,25 +213,18 @@ function LevelMaker.generate(width, height)
                                 if i == 2 then
                                     flagpole.consumable = true
                                     flagpole.onConsume = function(player, object)
-                                        if gNewLevel == false then
-                                            gNewLevel = true
-                                            gLevelWidth = gLevelWidth + 20
-                                            gPlayerScore = gPlayerScore + player.score
-                                            gLevelNumber = gLevelNumber + 1
-                                            gKeyVals = {
-                                                ['obtained'] = false,
-                                                ['color'] = math.random(4),
-                                                ['unlocked'] = false
-                                            }
-                                            gStateMachine:change('play')
-                                        end
+                                        gStateMachine:change('play', {
+                                            ['levelNum'] = gStateMachine.current.levelNum + 1,
+                                            ['score'] = gStateMachine.current.player.score,
+                                            ['levelWidth'] = gStateMachine.current.levelWidth + 20,
+                                        })
                                     end
                                 end
                                 table.insert(objects, flagpole)
                             end
                             local flagBanner = GameObject {
                                 texture = 'flagbanners',
-                                x = (gLevelWidth-1)*TILE_SIZE-8,
+                                x = (gStateMachine.current.levelWidth-1)*TILE_SIZE-8,
                                 y = (3*TILE_SIZE),
                                 width = 16,
                                 height = 16,

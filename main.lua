@@ -58,11 +58,6 @@ function love.load()
         ['color'] = math.random(4),
         ['unlocked'] = false
     }
-    -- initialize level width at 100 at first
-    gLevelWidth = 100
-    gPlayerScore = 0
-    gNewLevel = false
-    gLevelNumber = 1
 
     love.keyboard.keysPressed = {}
 

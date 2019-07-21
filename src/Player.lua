@@ -96,6 +96,10 @@ function Player:die()
         ['unlocked'] = false
     }
     gSounds['death']:play()
-    gStateMachine:change('start')
+    gStateMachine:change('start', {
+        ['levelNum'] = 1,
+        ['score'] = 0,
+        ['levelWidth'] = 100,
+    })
     gLevelNumber = 1
 end
