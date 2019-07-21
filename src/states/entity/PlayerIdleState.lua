@@ -31,8 +31,6 @@ function PlayerIdleState:update(dt)
     -- check if we've collided with any entities and die if so
     for k, entity in pairs(self.player.level.entities) do
         if entity:collides(self.player) then
-            -- gSounds['death']:play()
-            -- gStateMachine:change('start')
             self.player:die()
         end
     end

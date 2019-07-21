@@ -56,6 +56,7 @@ function PlayState:render()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(tostring(self.player.score), 4, 4)
 
+    -- displays level number
     love.graphics.setFont(gFonts['small'])
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.print("Level "..tostring(self.levelNum), VIRTUAL_WIDTH-40, 10)
@@ -64,6 +65,7 @@ function PlayState:render()
     love.graphics.setFont(gFonts['medium'])
 
     if self.keyVals.obtained and not self.keyVals.unlocked then
+        -- draw key icon in upper right corner
         love.graphics.draw(
             -- textures indexed by key color number
             gTextures['keys'], gFrames['keys'][self.keyVals.color],
@@ -73,6 +75,7 @@ function PlayState:render()
             0, 0.5
         )
     else if self.keyVals.unlocked then
+        -- draw flag icon in upper right corner
         love.graphics.draw(
             -- textures indexed by key color number
             gTextures['flagbanners'], gFrames['flagbanners'][self.keyVals.color*2],
@@ -150,6 +153,7 @@ function PlayState:enter(params)
             ['levelWidth'] = 100,
         }
     end
+    -- always init to the same values
     self.keyVals = {
         ['obtained'] = false,
         ['color'] = math.random(4),

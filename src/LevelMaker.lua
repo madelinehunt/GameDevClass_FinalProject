@@ -213,6 +213,7 @@ function LevelMaker.generate(width, height)
                                 if i == 2 then
                                     flagpole.consumable = true
                                     flagpole.onConsume = function(player, object)
+                                        gSounds['pickup']:play()
                                         gStateMachine:change('play', {
                                             ['levelNum'] = gStateMachine.current.levelNum + 1,
                                             ['score'] = gStateMachine.current.player.score,

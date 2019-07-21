@@ -75,8 +75,6 @@ function PlayerJumpState:update(dt)
     for k, entity in pairs(self.player.level.entities) do
         if entity:collides(self.player) then
             self.player:die()
-            -- gSounds['death']:play()
-            -- gStateMachine:change('start')
         end
     end
 end
