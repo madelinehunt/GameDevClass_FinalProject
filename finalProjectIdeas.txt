@@ -1,0 +1,22 @@
+* adding powerups (big mode, fireballs)
+* new player sprite, smaller than 16x16
+* fix collision detection
+* add new enemy/enemies
+* extra lives, and ability to retry level
+* fix colors (not background same color as tiles or sprites)
+* consistent look per level--i.e. colors of bushes and whatnot
+** stages? moving through grass to sand to underground, etc
+** can you win the game?
+* center camera y on player
+* length of jumping depends on how long space bar is held 
+• chunking of level creation
+•• model level as two-dimensional array of tiles
+••• function to collapse into a single-dimensional array
+•• function to check adjacency of a single tile--ie: blocks have awareness of what spawns around them--make it so they can't trap player
+* floating platforms
+* options menu--volume, etc
+* conditionally-appearing stuff (extra lives?) based on nLevel, Also, levels get harder.
+* better animation--enemy deaths, block hits, character death, new level)
+* fix jittery background animation
+* killing enemy bounces character
+* consistent block look per level
