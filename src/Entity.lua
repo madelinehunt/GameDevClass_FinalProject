@@ -33,6 +33,9 @@ function Entity:init(def)
 
     -- reference to level for tests against other entities + objects
     self.level = def.level
+    if def.lives ~= nil then
+        self.lives = def.lives
+    end
 end
 
 function Entity:changeState(state, params)

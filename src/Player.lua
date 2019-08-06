@@ -13,6 +13,7 @@ Player = Class{__includes = Entity}
 function Player:init(def)
     Entity.init(self, def)
     self.score = 0
+    self.xSpeed = PLAYER_WALK_SPEED
 end
 
 function Player:update(dt)
@@ -25,8 +26,8 @@ end
 
 function Player:checkLeftCollisions(dt)
     -- check for left two tiles collision
-    local tileTopLeft = self.map:pointToTile(self.x + 1, self.y + 1)
-    local tileBottomLeft = self.map:pointToTile(self.x + 1, self.y + self.height - 1)
+    local tileTopLeft = self.map:pointToTile((self.x + PLAYER_SIDE_OFFSET) + 1, self.y + 1)
+    local tileBottomLeft = self.map:pointToTile((self.x + PLAYER_SIDE_OFFSET) + 1, self.y + self.height - 1)
 
     -- place player outside the X bounds on one of the tiles to reset any overlap
     if (tileTopLeft and tileBottomLeft) and (tileTopLeft:collidable() or tileBottomLeft:collidable()) then
@@ -47,8 +48,8 @@ end
 
 function Player:checkRightCollisions(dt)
     -- check for right two tiles collision
-    local tileTopRight = self.map:pointToTile(self.x + self.width - 1, self.y + 1)
-    local tileBottomRight = self.map:pointToTile(self.x + self.width - 1, self.y + self.height - 1)
+    local tileTopRight = self.map:pointToTile(self.x + self.width - 1 - PLAYER_SIDE_OFFSET, self.y + 1)
+    local tileBottomRight = self.map:pointToTile(self.x + self.width - 1 - PLAYER_SIDE_OFFSET, self.y + self.height - 1)
 
     -- place player outside the X bounds on one of the tiles to reset any overlap
     if (tileTopRight and tileBottomRight) and (tileTopRight:collidable() or tileBottomRight:collidable()) then
@@ -86,6 +87,7 @@ end
 
 
 function Player:die()
+    print(gStateMachine.current.player.lives)
     gSounds['death']:play()
     gStateMachine:change('start', {
         ['levelNum'] = 1,

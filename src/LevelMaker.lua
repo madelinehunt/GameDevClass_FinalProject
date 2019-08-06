@@ -166,8 +166,15 @@ function LevelMaker.generate(width, height)
                                 end
 
                                 obj.hit = true
+                                obj.y = obj['y']-4
+                                Timer.tween(0.1, {
+                                    [obj] = {y = (blockHeight - 1) * TILE_SIZE}
+                                })
                             end
-
+                            obj.y = obj['y']-2
+                            Timer.tween(0.1, {
+                                [obj] = {y = (blockHeight - 1) * TILE_SIZE}
+                            })
                             gSounds['empty-block']:play()
                         end
                     }

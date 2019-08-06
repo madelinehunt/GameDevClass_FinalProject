@@ -20,6 +20,7 @@ function PlayerIdleState:init(player)
 end
 
 function PlayerIdleState:update(dt)
+    self.player.xSpeed = PLAYER_WALK_SPEED
     if love.keyboard.isDown('left') or love.keyboard.isDown('right') then
         self.player:changeState('walking')
     end

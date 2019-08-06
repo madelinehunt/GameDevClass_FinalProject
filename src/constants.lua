@@ -21,6 +21,9 @@ VIRTUAL_HEIGHT = 144
 -- global standard tile size
 TILE_SIZE = 16
 
+-- player pixel offset
+PLAYER_SIDE_OFFSET = 2
+
 -- width and height of screen in tiles
 SCREEN_TILE_WIDTH = VIRTUAL_WIDTH / TILE_SIZE
 SCREEN_TILE_HEIGHT = VIRTUAL_HEIGHT / TILE_SIZE
@@ -49,6 +52,7 @@ TILE_SETS = TILE_SETS_WIDE * TILE_SETS_TALL
 
 -- player walking speed
 PLAYER_WALK_SPEED = 60
+PLAYER_RUN_SPEED = 90
 
 -- player jumping velocity
 PLAYER_JUMP_VELOCITY = -150

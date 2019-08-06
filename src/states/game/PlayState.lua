@@ -10,7 +10,6 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
     self.camX = 0
     self.camY = 0
-
 end
 
 function PlayState:update(dt)
@@ -182,7 +181,8 @@ function PlayState:enter(params)
             ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
         },
         map = self.tileMap,
-        level = self.level
+        level = self.level,
+        lives = 3,
     })
     self.player.score = params.score
 

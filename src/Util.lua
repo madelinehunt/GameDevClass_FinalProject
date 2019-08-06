@@ -99,3 +99,29 @@ function print_r ( t )
     end
     print()
 end
+
+
+
+function parseChunk(filename)
+    -- symbol mapping
+    symbolKey = {
+        ['.'] = "empty",
+        ['#'] = "tile",
+        -- ['@'] = "key",
+        -- ['%'] = "block",
+    }
+
+    -- reads from file, mapping symbols to descriptions
+    lines = {}
+    chunk = io.open(filename, "r")
+    for line in chunk:lines() do
+        row = {}
+        for i=1, #line do
+            char = line:sub(i,i)
+            table.insert(row, symbolKey[char])
+        end
+        table.insert(lines, row)
+    end
+    chunk:close()
+    return lines
+end
