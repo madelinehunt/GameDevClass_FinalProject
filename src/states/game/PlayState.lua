@@ -63,6 +63,22 @@ function PlayState:render()
     love.graphics.print("Level "..tostring(self.levelNum), VIRTUAL_WIDTH-39.5, 9.5)
     love.graphics.setFont(gFonts['medium'])
 
+    -- displays extra lives count
+    love.graphics.draw(
+        gTextures['pink-alien'], gFrames['pink-alien'][1],
+        -- x and y
+        (VIRTUAL_WIDTH/2) - 6, 6,
+        0, 0.5
+    )
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.print(" x "..tostring(self.player.lives), (VIRTUAL_WIDTH/2), 10)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print(" x "..tostring(self.player.lives), (VIRTUAL_WIDTH/2) - 0.5, 9.5)
+    love.graphics.setFont(gFonts['medium'])
+
+
+
     if self.keyVals.obtained and not self.keyVals.unlocked then
         -- draw key icon in upper right corner
         love.graphics.draw(
@@ -172,7 +188,7 @@ function PlayState:enter(params)
 
     self.player = Player({
         x = 0, y = 0,
-        width = 16, height = 20,
+        width = 12, height = 20,
         texture = 'pink-alien',
         stateMachine = StateMachine {
             ['idle'] = function() return PlayerIdleState(self.player) end,
@@ -182,12 +198,53 @@ function PlayState:enter(params)
         },
         map = self.tileMap,
         level = self.level,
-        lives = 3,
     })
     self.player.score = params.score
 
+    if params.lives == nil then
+        self.player.lives = 3
+    else
+        self.player.lives = params.lives
+    end
+
+
     self:spawnEnemies()
 
+    self.levelDoOver = {
+        ['levelObj'] = deepcopy(self.level),
+        ['tileMap'] = deepcopy(self.level.tileMap),
+        ['entities'] = deepcopy(self.level.entities),
+        ['objects'] = deepcopy(self.level.objects),
+    }
     self.player:changeState('falling')
+end
+
+
+function PlayState:DoOver(params)
+    -- self.level = self.levelDoOver.levelObj
+    -- self.player.level = self.levelDoOver.levelObj
+
+
+    self.tileMap = self.levelDoOver.tileMap
+    self.level.entities = self.levelDoOver.entities
+    self.level.objects = self.levelDoOver.objects
+    self.keyVals['obtained'] = false
+    self.keyVals['unlocked'] = false
+
+    self.player.x = 0
+    self.player.y = 0
+
+    -- reset enemies
+    for k, v in pairs(self.level.entities) do
+        v.stateMachine = StateMachine {
+            ['idle'] = function() return SnailIdleState(self.tileMap, self.player, v) end,
+            ['moving'] = function() return SnailMovingState(self.tileMap, self.player, v) end,
+            ['chasing'] = function() return SnailChasingState(self.tileMap, self.player, v) end
+        }
+        v:changeState('idle', {
+            wait = math.random(5)
+        })
+    end
+
 
 end

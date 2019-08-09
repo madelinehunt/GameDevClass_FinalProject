@@ -39,9 +39,9 @@ function PlayerJumpState:update(dt)
 
     self.player.y = self.player.y + (self.player.dy * dt)
 
-    -- look at two tiles above our head and check for collisions; 3 pixels of leeway for getting through gaps
-    local tileLeft = self.player.map:pointToTile(self.player.x + 3, self.player.y)
-    local tileRight = self.player.map:pointToTile(self.player.x + self.player.width - 3, self.player.y)
+    -- look at two tiles above our head and check for collisions; 8 pixels of leeway for getting through gaps
+    local tileLeft = self.player.map:pointToTile(self.player.x + 8, self.player.y)
+    local tileRight = self.player.map:pointToTile(self.player.x + self.player.width - 8, self.player.y)
 
     -- if we get a collision up top, go into the falling state immediately
     if (tileLeft and tileRight) and (tileLeft:collidable() or tileRight:collidable()) then

@@ -100,8 +100,26 @@ function print_r ( t )
     print()
 end
 
+--[[
+    I cannot believe Lua has no built-in way to copy tables.
+    Here's one from https://gist.github.com/tylerneylon/81333721109155b2d244#file-copy-lua-L80
+]]--
+function deepcopy(obj, seen)
+  -- Handle non-tables and previously-seen tables.
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+
+  -- New table; mark it as seen an copy recursively.
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[deepcopy(k, s)] = deepcopy(v, s) end
+  return res
+end
 
 
+
+-- function to parse the text files I use to visually design chunks for the levels
 function parseChunk(filename)
     -- symbol mapping
     symbolKey = {

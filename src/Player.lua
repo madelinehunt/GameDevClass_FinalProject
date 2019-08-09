@@ -87,11 +87,17 @@ end
 
 
 function Player:die()
-    print(gStateMachine.current.player.lives)
-    gSounds['death']:play()
-    gStateMachine:change('start', {
-        ['levelNum'] = 1,
-        ['score'] = 0,
-        ['levelWidth'] = 100,
-    })
+    if self.lives > 1 then
+        self.lives = self.lives - 1
+        self.score = 0
+        gSounds['death']:play()
+        gStateMachine.current:DoOver()
+    else
+        gSounds['death']:play()
+        gStateMachine:change('start', {
+            ['levelNum'] = 1,
+            ['score'] = 0,
+            ['levelWidth'] = 100,
+        })
+    end
 end

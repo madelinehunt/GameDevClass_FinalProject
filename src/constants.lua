@@ -20,9 +20,11 @@ VIRTUAL_HEIGHT = 144
 
 -- global standard tile size
 TILE_SIZE = 16
+PLAYER_WIDTH = 12
+PLAYER_HEIGHT = 20
 
--- player pixel offset
-PLAYER_SIDE_OFFSET = 2
+-- player pixel offsets
+PLAYER_SIDE_OFFSET = 0
 
 -- width and height of screen in tiles
 SCREEN_TILE_WIDTH = VIRTUAL_WIDTH / TILE_SIZE
@@ -57,8 +59,9 @@ PLAYER_RUN_SPEED = 90
 -- player jumping velocity
 PLAYER_JUMP_VELOCITY = -150
 
--- snail movement speed
+-- enemy movement speed
 SNAIL_MOVE_SPEED = 10
+FLY_MOVE_SPEED = 15
 
 --
 -- tile IDs

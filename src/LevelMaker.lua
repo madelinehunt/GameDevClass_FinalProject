@@ -114,71 +114,74 @@ function LevelMaker.generate(width, height)
             -- chance to spawn a block
             if math.random(10) == 1 and x < width-2 then
                 jumpBlockHere = true
-                table.insert(objects,
-                    GameObject {
-                        texture = 'jump-blocks',
-                        x = (x - 1) * TILE_SIZE,
-                        y = (blockHeight - 1) * TILE_SIZE,
-                        width = 16,
-                        height = 16,
+                -- table.insert(objects,
+                newBlock = GameObject {
+                    texture = 'jump-blocks',
+                    x = (x - 1) * TILE_SIZE,
+                    y = (blockHeight - 1) * TILE_SIZE,
+                    width = 16,
+                    height = 16,
 
-                        -- make it a random variant
-                        frame = math.random(#JUMP_BLOCKS),
-                        collidable = true,
-                        hit = false,
-                        solid = true,
+                    -- make it a random variant
+                    frame = math.random(#JUMP_BLOCKS),
+                    collidable = true,
+                    hit = false,
+                    solid = true,
 
-                        -- collision function takes itself
-                        onCollide = function(obj)
+                    -- collision function takes itself
+                    onCollide = function(obj)
 
-                            -- spawn a gem if we haven't already hit the block
-                            if not obj.hit then
+                        -- spawn a gem if we haven't already hit the block
+                        if not obj.hit then
 
-                                -- chance to spawn gem, not guaranteed
-                                if math.random(5) == 1 then
+                            -- chance to spawn gem, not guaranteed
+                            if obj.hasGem then
 
-                                    -- maintain reference so we can set it to nil
-                                    local gem = GameObject {
-                                        texture = 'gems',
-                                        x = (x - 1) * TILE_SIZE,
-                                        y = (blockHeight - 1) * TILE_SIZE - 4,
-                                        width = 16,
-                                        height = 16,
-                                        frame = math.random(#GEMS),
-                                        collidable = true,
-                                        consumable = true,
-                                        solid = false,
+                                -- maintain reference so we can set it to nil
+                                local gem = GameObject {
+                                    texture = 'gems',
+                                    x = (x - 1) * TILE_SIZE,
+                                    y = (blockHeight - 1) * TILE_SIZE - 4,
+                                    width = 16,
+                                    height = 16,
+                                    frame = math.random(#GEMS),
+                                    collidable = true,
+                                    consumable = true,
+                                    solid = false,
 
-                                        -- gem has its own function to add to the player's score
-                                        onConsume = function(player, object)
-                                            gSounds['pickup']:play()
-                                            player.score = player.score + 100
-                                        end
-                                    }
+                                    -- gem has its own function to add to the player's score
+                                    onConsume = function(player, object)
+                                        gSounds['pickup']:play()
+                                        player.score = player.score + 100
+                                    end
+                                }
 
-                                    -- make the gem move up from the block and play a sound
-                                    Timer.tween(0.1, {
-                                        [gem] = {y = (blockHeight - 2) * TILE_SIZE}
-                                    })
-                                    gSounds['powerup-reveal']:play()
-
-                                    table.insert(objects, gem)
-                                end
-
-                                obj.hit = true
-                                obj.y = obj['y']-4
+                                -- make the gem move up from the block and play a sound
                                 Timer.tween(0.1, {
-                                    [obj] = {y = (blockHeight - 1) * TILE_SIZE}
+                                    [gem] = {y = (blockHeight - 2) * TILE_SIZE}
                                 })
+                                gSounds['powerup-reveal']:play()
+
+                                table.insert(gStateMachine.current.level.objects, gem)
                             end
-                            obj.y = obj['y']-2
+
+                            obj.hit = true
+                            obj.y = obj['y']-4
                             Timer.tween(0.1, {
                                 [obj] = {y = (blockHeight - 1) * TILE_SIZE}
                             })
-                            gSounds['empty-block']:play()
                         end
-                    }
-                )
+                        obj.y = obj['y']-2
+                        Timer.tween(0.1, {
+                            [obj] = {y = (blockHeight - 1) * TILE_SIZE}
+                        })
+                        gSounds['empty-block']:play()
+                    end
+                }
+                -- )
+                newBlock.hasGem = math.random(5) == 1
+
+                table.insert(objects, newBlock)
             end
 
             -- spawning the lock
@@ -195,12 +198,13 @@ function LevelMaker.generate(width, height)
                     hit = false,
                     solid = true,
                     onCollide = function(obj)
+                        gStateMachine.current.player.y = gStateMachine.current.player.y + 2
                         if gStateMachine.current.keyVals['obtained'] then
                             gSounds['powerup-reveal']:play()
                             gStateMachine.current.keyVals['unlocked'] = true
-                            for k,v in pairs(objects) do
+                            for k,v in pairs(gStateMachine.current.level.objects) do
                                 if v.texture == 'locks' then
-                                    table.remove(objects, k)
+                                    table.remove(gStateMachine.current.level.objects, k)
                                 end
                             end
 
@@ -225,10 +229,11 @@ function LevelMaker.generate(width, height)
                                             ['levelNum'] = gStateMachine.current.levelNum + 1,
                                             ['score'] = gStateMachine.current.player.score,
                                             ['levelWidth'] = gStateMachine.current.levelWidth + 20,
+                                            ['lives'] = gStateMachine.current.player.lives
                                         })
                                     end
                                 end
-                                table.insert(objects, flagpole)
+                                table.insert(gStateMachine.current.level.objects, flagpole)
                             end
                             local flagBanner = GameObject {
                                 texture = 'flagbanners',
@@ -241,7 +246,7 @@ function LevelMaker.generate(width, height)
                                 consumable = false,
                                 solid = false,
                             }
-                            table.insert(objects, flagBanner)
+                            table.insert(gStateMachine.current.level.objects, flagBanner)
 
                         else
                             gSounds['empty-block']:play()
@@ -249,7 +254,6 @@ function LevelMaker.generate(width, height)
 
                     end,
                 }
-                newLock.deletePos = #objects
                 table.insert(objects,newLock)
             end
 

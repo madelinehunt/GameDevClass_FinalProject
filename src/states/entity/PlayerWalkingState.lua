@@ -11,7 +11,7 @@ PlayerWalkingState = Class{__includes = BaseState}
 function PlayerWalkingState:init(player)
     self.player = player
     self.animation = Animation {
-        frames = {10, 11},
+        frames = {4,5},
         interval = 0.1
     }
     self.player.currentAnimation = self.animation
@@ -28,8 +28,8 @@ function PlayerWalkingState:update(dt)
     if not love.keyboard.isDown('left') and not love.keyboard.isDown('right') then
         self.player:changeState('idle')
     else
-        local tileBottomLeft = self.player.map:pointToTile(self.player.x + 1 - PLAYER_SIDE_OFFSET, self.player.y + self.player.height)
-        local tileBottomRight = self.player.map:pointToTile(self.player.x + self.player.width - 1 - PLAYER_SIDE_OFFSET, self.player.y + self.player.height)
+        local tileBottomLeft = self.player.map:pointToTile(self.player.x + 1, self.player.y + self.player.height)
+        local tileBottomRight = self.player.map:pointToTile(self.player.x + self.player.width - 1, self.player.y + self.player.height)
 
         -- temporarily shift player down a pixel to test for game objects beneath
         self.player.y = self.player.y + 1
