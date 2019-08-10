@@ -103,3 +103,5 @@ for i = 1, 30 do
 end
 
 N_OF_FLAGS = 6
+
+CHUNK_LENGTH = 10

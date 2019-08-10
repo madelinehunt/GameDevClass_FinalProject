@@ -155,3 +155,28 @@ function split(s, delimiter)
     end
     return result;
 end
+
+-- function to transpose a 2d array (matrix)
+-- assumes all x-axis arrays are the same length
+function matrixTranspose(matrix)
+    local ylen = 0
+    for i,v in ipairs(matrix) do
+        ylen = ylen + 1
+    end
+
+    local xlen = 0
+    for i,v in ipairs(matrix[1]) do
+        xlen = xlen + 1
+    end
+
+    matrixToReturn = {}
+    for y = 1, xlen do
+        newRow = {}
+        for x,v in ipairs(matrix) do
+            table.insert(newRow, matrix[x][y])
+        end
+        table.insert(matrixToReturn, newRow)
+    end
+
+    return matrixToReturn
+end

@@ -131,5 +131,4 @@ chunkFilenames = {
     'chunks/dip.txt',
     'chunks/hill.txt',
     'chunks/fingers.txt',
-    'chunks/tree.txt',
 }

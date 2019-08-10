@@ -19,6 +19,11 @@ function Tile:init(x, y, id, topper, tileset, topperset)
     self.tileset = tileset
     self.topper = topper
     self.topperset = topperset
+    if self.id == TILE_ID_EMPTY then
+        self.empty = true
+    else
+        self.empty = false
+    end
 end
 
 --[[
