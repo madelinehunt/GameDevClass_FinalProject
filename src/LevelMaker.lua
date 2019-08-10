@@ -300,10 +300,26 @@ function LevelMaker.generate(width, height)
         print(name)
         chunks[name] = genChunk(parseChunk(v), tileset, topperset)
     end
+    specials = {
+        'endFlag'
+    }
+    specialChunks = {}
+    for i,v in pairs(specials) do
+        if chunks[v] ~= nil then
+            specialChunks[v] = chunks[v]
+            chunks[v] = nil
+        end
+    end
+    local chunkKeys = {}
+    for k,v in pairs(chunks) do
+        table.insert(chunkKeys, k)
+    end
+    print_r(chunkKeys)
 
-    for x=1, #chunks['pyramid'] do
-        for y=1, #chunks['pyramid'][x] do
-            tiles[x][y] = chunks['pyramid'][x][y]
+
+    for x=1, #chunks['tree'] do
+        for y=1, #chunks['tree'][x] do
+            tiles[x][y] = chunks['tree'][x][y]
         end
     end
 

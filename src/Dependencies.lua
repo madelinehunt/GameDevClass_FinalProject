@@ -127,5 +127,9 @@ gFonts = {
 chunkFilenames = {
     'chunks/pyramid.txt',
     'chunks/endFlag.txt',
-    'chunks/pillars.txt'
+    'chunks/pillars.txt',
+    'chunks/dip.txt',
+    'chunks/hill.txt',
+    'chunks/fingers.txt',
+    'chunks/tree.txt',
 }
