@@ -143,3 +143,15 @@ function parseChunk(filename)
     chunk:close()
     return lines
 end
+
+--[[
+    Wow, lua also doesn't have a string split function.
+    Here's one from https://helloacm.com/split-a-string-in-lua/
+]]
+function split(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result;
+end

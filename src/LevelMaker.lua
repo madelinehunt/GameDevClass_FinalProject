@@ -33,7 +33,7 @@ function LevelMaker.generate(width, height)
     local keySpawned = false
     local lockSpawned = false
 
-    -- insert blank tables into tiles for later access
+    -- create blank rows
     for x = 1, height do
         table.insert(tiles, {})
     end
@@ -279,6 +279,31 @@ function LevelMaker.generate(width, height)
                 }
                 table.insert(objects,newKey)
             end
+        end
+    end
+
+    -- for i=1, 2 do
+    --     print("------")
+    --     print_r(tiles[i])
+    --     print("&&")
+    --     print_r(chunks[i])
+    --     print(">>>>>>")
+    --     tiles
+    -- end
+
+
+
+    local chunks = {}
+    for k,v in pairs(chunkFilenames) do
+        name = split(v, '/')[2]
+        name = split(name, '.txt')[1]
+        print(name)
+        chunks[name] = genChunk(parseChunk(v), tileset, topperset)
+    end
+
+    for x=1, #chunks['pyramid'] do
+        for y=1, #chunks['pyramid'][x] do
+            tiles[x][y] = chunks['pyramid'][x][y]
         end
     end
 

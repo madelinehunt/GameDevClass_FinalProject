@@ -54,7 +54,10 @@ TILE_SETS = TILE_SETS_WIDE * TILE_SETS_TALL
 
 -- player walking speed
 PLAYER_WALK_SPEED = 60
-PLAYER_RUN_SPEED = 90
+-- sets to same as walk speed--overridden in testing.lua if enabled
+PLAYER_RUN_SPEED = 60
+
+PLAYER_LIVES = 3
 
 -- player jumping velocity
 PLAYER_JUMP_VELOCITY = -150

@@ -54,6 +54,7 @@ require 'src/Snail'
 require 'src/Fly'
 require 'src/Tile'
 require 'src/TileMap'
+require 'src/chunkFuncs'
 
 require 'src/testing'
 
@@ -120,4 +121,11 @@ gFonts = {
     ['medium'] = love.graphics.newFont('fonts/font.ttf', 16),
     ['large'] = love.graphics.newFont('fonts/font.ttf', 32),
     ['title'] = love.graphics.newFont('fonts/ArcadeAlternate.ttf', 32)
+}
+
+-- define the filenames of chunk files
+chunkFilenames = {
+    'chunks/pyramid.txt',
+    'chunks/endFlag.txt',
+    'chunks/pillars.txt'
 }

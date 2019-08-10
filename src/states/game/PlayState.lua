@@ -132,7 +132,24 @@ function PlayState:spawnEnemies()
 
                     -- random chance, 1 in 20
                     if math.random(20) == 1 then
+                        -- instantiate snail, declaring in advance so we can pass it into state machine
+                        -- local fly
+                        local fly
+                        fly = Fly {
+                            texture = 'creatures',
+                            x = (x - 1) * TILE_SIZE,
+                            y = math.min(((y - 2) * TILE_SIZE + 2)-(TILE_SIZE*2), (TILE_SIZE*2)),
+                            width = 16,
+                            height = 16,
+                            stateMachine = StateMachine {
+                                ['moving'] = function() return FlyMovingState(self.tileMap, self.player, fly) end,
+                            }
+                        }
+                        fly.type = 'fly'
+                        fly:changeState('moving')
 
+                        table.insert(self.level.entities, fly)
+                    elseif math.random(10) == 1 then
                         -- instantiate snail, declaring in advance so we can pass it into state machine
                         local snail
                         snail = Snail {
@@ -150,6 +167,7 @@ function PlayState:spawnEnemies()
                         snail:changeState('idle', {
                             wait = math.random(5)
                         })
+                        snail.type = 'snail'
 
                         table.insert(self.level.entities, snail)
                     end
@@ -202,7 +220,7 @@ function PlayState:enter(params)
     self.player.score = params.score
 
     if params.lives == nil then
-        self.player.lives = 3
+        self.player.lives = PLAYER_LIVES
     else
         self.player.lives = params.lives
     end
@@ -221,29 +239,44 @@ end
 
 
 function PlayState:DoOver(params)
-    -- self.level = self.levelDoOver.levelObj
-    -- self.player.level = self.levelDoOver.levelObj
-
-
+    self.level = self.levelDoOver.levelObj
+    self.player.level = self.levelDoOver.levelObj
     self.tileMap = self.levelDoOver.tileMap
     self.level.entities = self.levelDoOver.entities
     self.level.objects = self.levelDoOver.objects
+    -- I was having bugs with disappearing entities, and this brute-forces it
+    self.levelDoOver = {
+        ['levelObj'] = deepcopy(self.level),
+        ['tileMap'] = deepcopy(self.level.tileMap),
+        ['entities'] = deepcopy(self.level.entities),
+        ['objects'] = deepcopy(self.level.objects),
+    }
+
     self.keyVals['obtained'] = false
     self.keyVals['unlocked'] = false
 
     self.player.x = 0
     self.player.y = 0
+    self.player:changeState('falling')
 
     -- reset enemies
     for k, v in pairs(self.level.entities) do
-        v.stateMachine = StateMachine {
-            ['idle'] = function() return SnailIdleState(self.tileMap, self.player, v) end,
-            ['moving'] = function() return SnailMovingState(self.tileMap, self.player, v) end,
-            ['chasing'] = function() return SnailChasingState(self.tileMap, self.player, v) end
-        }
-        v:changeState('idle', {
-            wait = math.random(5)
-        })
+        if v.type == 'snail' then
+            v.stateMachine = StateMachine {
+                ['idle'] = function() return SnailIdleState(self.tileMap, self.player, v) end,
+                ['moving'] = function() return SnailMovingState(self.tileMap, self.player, v) end,
+                ['chasing'] = function() return SnailChasingState(self.tileMap, self.player, v) end
+            }
+            v:changeState('idle', {
+                wait = math.random(5)
+            })
+        elseif v.type == 'fly' then
+            v.stateMachine = StateMachine {
+                ['moving'] = function() return FlyMovingState(self.tileMap, self.player, v) end,
+            }
+            v:changeState('moving')
+        end
+
     end
 
 
