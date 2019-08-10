@@ -85,7 +85,6 @@ function genChunk(parsedChunk, tileset, topperset)
     end
 
     returnChunk['tiles'] = chunkOfTiles
-    -- print_r(chunkOfTiles)
     returnChunk['tileMeta'] = genTileMeta(parsedChunk)
     return returnChunk
 end

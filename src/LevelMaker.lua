@@ -110,8 +110,11 @@ function LevelMaker.generate(width, height)
         end
     end
     -- print_r(tileMeta)
-    
+
+
     -- substitute chunks into the tile map
+    tiles = matrixTranspose(tiles)
+
     local chunks = {}
     for k,v in pairs(chunkFilenames) do
         name = split(v, '/')[2]
@@ -137,22 +140,49 @@ function LevelMaker.generate(width, height)
     lowerBound = 10
     upperBound = width -10 -CHUNK_LENGTH -- taking off another 10 for flag chunk
 
-    yPos = math.min(lowerBound + math.random(width/n_of_chunks), upperBound)
+    yPos = math.min(math.floor(lowerBound + math.random(width/n_of_chunks)), upperBound)
 
     for n=1, n_of_chunks do
-        sampled_chunk = chunks[chunkKeys[math.random(#chunkKeys)]]
-        newTiles = sampled_chunk['tiles']
+        key = chunkKeys[math.random(#chunkKeys)]
+        sampled_chunk = chunks[key]
+
+        newTiles = matrixTranspose(sampled_chunk['tiles'])
         newTileMeta = sampled_chunk['tileMeta']
-        for x=1, CHUNK_LENGTH do
-            for y=1, CHUNK_LENGTH do
-                tiles[x][y+yPos] = newTiles[x][y]
+        for col=1, CHUNK_LENGTH do
+            local columnTiles = newTiles[col]
+            local tilesToReplace = tiles[yPos+col]
+            -- print("----")
+            for i,v in ipairs(columnTiles) do
+                columnTiles[i].x = tilesToReplace[i].x
+                tilesToReplace[i] = columnTiles[i]
             end
-            tileMeta[x+yPos] = newTileMeta[x]
+            -- print_r(tiles[yPos+col])
+            -- print_r(tileMeta[yPos+col])
+            -- print("::")
+            -- print_r(columnTiles)
+            -- print_r(newTileMeta[col])
+            -- print("----")
+            tileMeta[yPos+col] = newTileMeta[col]
         end
-        yPos = math.min(yPos + math.random(width/n_of_chunks), upperBound)
+        yPos = math.min(math.floor(yPos + math.random(width/n_of_chunks)), upperBound)
     end
 
+    -- swap out end for mario-style ramp to flag
 
+    yPos = width - CHUNK_LENGTH
+    sampled_chunk = specialChunks['endFlag']
+    newTiles = matrixTranspose(sampled_chunk['tiles'])
+    newTileMeta = sampled_chunk['tileMeta']
+    for col=1, CHUNK_LENGTH do
+        local columnTiles = newTiles[col]
+        for k,v in pairs(columnTiles) do
+            v.x = v.x + yPos
+        end
+        tiles[yPos+col] = columnTiles
+        tileMeta[yPos+col] = newTileMeta[col]
+    end
+
+    tiles = matrixTranspose(tiles)
 
     -- spawn objects and some more decorations
     for x = 1, width do
@@ -194,7 +224,7 @@ function LevelMaker.generate(width, height)
             )
         end
 
-        if math.random(8) == 1 and x < width-2 and spawnable then
+        if math.random(8) == 1 and x < width-12 and spawnable then
             jumpBlockHere = true
             -- table.insert(objects,
             newBlock = GameObject {
@@ -269,7 +299,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- spawning the lock
-        if not lockSpawned and x > (width*.4) and x < (width*.6) and not jumpBlockHere and spawnable then
+        if not lockSpawned and x > (width*.3) and x < (width*.6) and not jumpBlockHere and spawnable then
             -- print("conditions met!")
             lockSpawned = true
             newLock = GameObject {
@@ -343,7 +373,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- spawning the key
-        if keySpawned == false and x > (width*.65) and x < (width*.85) and not jumpBlockHere then
+        if keySpawned == false and x > (width*.55) and x < (width*.85) and not jumpBlockHere and spawnable then
             keySpawned = true
             newKey = GameObject {
                 texture = 'keys',
@@ -366,16 +396,6 @@ function LevelMaker.generate(width, height)
         end
 
     end
-    -- print_r(chunkKeys)
-    -- print(chunkKeys[2])
-    -- print_r(chunks[chunkKeys[2]]['tileMeta'])
-
-
-    -- for x=1, #chunks['dip'] do
-    --     for y=1, #chunks['dip'][x] do
-    --         tiles[x][y] = chunks['dip'][x][y]
-    --     end
-    -- end
 
     local map = TileMap(width, height)
     map.tiles = tiles

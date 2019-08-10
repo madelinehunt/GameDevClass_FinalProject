@@ -120,7 +120,7 @@ end
 ]]
 function PlayState:spawnEnemies()
     -- spawn snails in the level
-    for x = 1, self.tileMap.width do
+    for x = 1, self.tileMap.width - 12 do
 
         -- flag for whether there's ground on this column of the level
         local groundFound = false
@@ -130,9 +130,8 @@ function PlayState:spawnEnemies()
                 if self.tileMap.tiles[y][x].id == TILE_ID_GROUND then
                     groundFound = true
 
-                    -- random chance, 1 in 20
-                    if math.random(20) == 1 then
-                        -- instantiate snail, declaring in advance so we can pass it into state machine
+                    -- random chance, 1 in 30
+                    if math.random(30) == 1 then
                         -- local fly
                         local fly
                         fly = Fly {
